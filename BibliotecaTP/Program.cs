@@ -12,7 +12,7 @@ namespace MySqlConsole
 {
 
 
-
+    
   
 
 
@@ -21,11 +21,111 @@ namespace MySqlConsole
 
 
         string connectionString = "server=localhost; database=bibliotp; user=root;";
-        public int id_libro;
-
+     
         static void Main(string[] args)
         {
+            string bibliotp = @"CREATE DATABASE IF NOT EXISTS bibliotp;";
+
             string connectionString = "server=localhost; database=bibliotp; user=root;";
+
+            string tablaprestamos = @"
+                CREATE TABLE IF NOT EXISTS prestamo(
+                id INT NOT NULL AUTO_INCREMENT,
+                fecha_prestamo DATE,
+                fecha_devolucion_estimada DATE,
+                fecha_devolucion_real DATE,
+                id_cliente INT,
+                id_libro INT,
+                CONSTRAINT fk_cliente
+                FOREIGN KEY (id_cliente) REFERENCES clientes(id),
+                CONSTRAINT fk_libro
+                FOREIGN KEY (id_libro) REFERENCES libros(id),
+                PRIMARY KEY (id));";
+
+            string tablaclientes = @"
+                CREATE TABLE IF NOT EXISTS clientes(
+	            id INT NOT NULL AUTO_INCREMENT,
+	            nombre VARCHAR(30) NOT NULL,
+	            apellido VARCHAR(30) NOT NULL,
+	            dni VARCHAR(8) NOT NULL,
+	            telefono VARCHAR(40) NOT NULL,
+	            email VARCHAR(40) NOT NULL,
+	            creado_el TIMESTAMP DEFAULT NOW(),
+	            actualizado_el TIMESTAMP DEFAULT NOW(),
+	            estado TINYINT DEFAULT(1),
+                PRIMARY KEY (id));
+                ;";
+
+            string tablalibros = @"
+                CREATE TABLE IF NOT EXISTS libros(
+	            id INT NOT NULL AUTO_INCREMENT,
+	            nombre VARCHAR(40) NOT NULL,
+	            autor VARCHAR(40) NOT NULL,
+	            fecha_lanzamiento DATE,
+	            id_genero INT,
+                creado_el TIMESTAMP DEFAULT NOW(),
+	            actualizado_el TIMESTAMP DEFAULT NOW(),
+	            estado TINYINT DEFAULT(1),
+	            PRIMARY KEY (id));
+                ;";
+
+            string tablageneros = @"
+                CREATE TABLE IF NOT EXISTS genero(
+	            id INT NOT NULL AUTO_INCREMENT,
+	            genero VARCHAR(20) NOT NULl,
+	            PRIMARY KEY (id));
+                ;";
+
+            // Crear la conexión a la base de datos
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                try
+                {
+                    // Abrir la conexión
+                    connection.Open();
+
+                    using (var command = new MySqlCommand(bibliotp, connection))
+                    {
+                        // Ejecutar la consulta
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Base de datos creada con éxito.");
+                    }
+
+                    Console.WriteLine("Conexión a la base de datos exitosa.");
+                    // Crear un comando para ejecutar la consulta SQL
+                    using (var command = new MySqlCommand(tablaprestamos, connection))
+                    {
+                        // Ejecutar la consulta
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Tabla 'Prestamos' creada con éxito.");
+                    }
+                    using (var command = new MySqlCommand(tablaclientes, connection))
+                    {
+                        // Ejecutar la consulta
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Tabla 'Clientes' creada con éxito.");
+                    }
+                    using (var command = new MySqlCommand(tablalibros, connection))
+                    {
+                        // Ejecutar la consulta
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Tabla 'Libros' creada con éxito.");
+                    }
+                    using (var command = new MySqlCommand(tablageneros, connection))
+                    {
+                        // Ejecutar la consulta
+                        command.ExecuteNonQuery();
+                        Console.WriteLine("Tabla 'Generos' creada con éxito.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Mostrar errores si ocurren
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+            }
+            Console.WriteLine("Presiona cualquier tecla para iniciar el programa...");
+            Console.ReadKey();
 
             void crear_usuario()
             {
@@ -147,7 +247,7 @@ namespace MySqlConsole
                     try
                     {
                         conn.Open();
-                        string query = "SELECT id, nombre, apellido, dni, telefono, email FROM clientes";
+                        string query = "SELECT id, nombre, apellido, dni, telefono, email FROM clientes WHERE estado = 1";
 
                         MySqlCommand cmd = new MySqlCommand(query, conn);
                         MySqlDataReader reader = cmd.ExecuteReader();
@@ -282,7 +382,7 @@ namespace MySqlConsole
                     try
                     {
                         conn.Open();
-                        string query = "SELECT id, nombre, autor, fecha_lanzamiento FROM libros";
+                        string query = "SELECT id, nombre, autor, fecha_lanzamiento FROM libros WHERE estado=1";
 
                         MySqlCommand cmd = new MySqlCommand(query, conn);
                         MySqlDataReader reader = cmd.ExecuteReader();
