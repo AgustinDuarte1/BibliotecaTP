@@ -29,97 +29,74 @@ namespace MySqlConsole
 
             string connectionString = "server=localhost; database=bibliotp; user=root;";
 
-            string tablaprestamos = @"
-                CREATE TABLE IF NOT EXISTS prestamo(
-                id INT NOT NULL AUTO_INCREMENT,
-                fecha_prestamo DATE,
-                fecha_devolucion_estimada DATE,
-                fecha_devolucion_real DATE,
-                id_cliente INT,
-                id_libro INT,
-                CONSTRAINT fk_cliente
-                FOREIGN KEY (id_cliente) REFERENCES clientes(id),
-                CONSTRAINT fk_libro
-                FOREIGN KEY (id_libro) REFERENCES libros(id),
-                PRIMARY KEY (id));";
-
-            string tablaclientes = @"
-                CREATE TABLE IF NOT EXISTS clientes(
-	            id INT NOT NULL AUTO_INCREMENT,
-	            nombre VARCHAR(30) NOT NULL,
-	            apellido VARCHAR(30) NOT NULL,
-	            dni VARCHAR(8) NOT NULL,
-	            telefono VARCHAR(40) NOT NULL,
-	            email VARCHAR(40) NOT NULL,
-	            creado_el TIMESTAMP DEFAULT NOW(),
-	            actualizado_el TIMESTAMP DEFAULT NOW(),
-	            estado TINYINT DEFAULT(1),
-                PRIMARY KEY (id));
-                ;";
-
-            string tablalibros = @"
-                CREATE TABLE IF NOT EXISTS libros(
-	            id INT NOT NULL AUTO_INCREMENT,
-	            nombre VARCHAR(40) NOT NULL,
-	            autor VARCHAR(40) NOT NULL,
-	            fecha_lanzamiento DATE,
-	            id_genero INT,
-                creado_el TIMESTAMP DEFAULT NOW(),
-	            actualizado_el TIMESTAMP DEFAULT NOW(),
-	            estado TINYINT DEFAULT(1),
-	            PRIMARY KEY (id));
-                ;";
-
-            string tablageneros = @"
-                CREATE TABLE IF NOT EXISTS genero(
-	            id INT NOT NULL AUTO_INCREMENT,
-	            genero VARCHAR(20) NOT NULl,
-	            PRIMARY KEY (id));
-                ;";
-
-            // Crear la conexión a la base de datos
-            using (var connection = new MySqlConnection(connectionString))
+            void CrearTablas()
             {
-                try
-                {
-                    // Abrir la conexión
-                    connection.Open();
+                string connectionString = "server=localhost; database=bibliotp; user=root;";
 
-                    Console.WriteLine("Conexión a la base de datos exitosa.");
-                    // Crear un comando para ejecutar la consulta SQL
-                    using (var command = new MySqlCommand(tablaprestamos, connection))
-                    {
-                        // Ejecutar la consulta
-                        command.ExecuteNonQuery();
-                        Console.WriteLine("Tabla 'Prestamos' creada con éxito.");
-                    }
-                    using (var command = new MySqlCommand(tablaclientes, connection))
-                    {
-                        // Ejecutar la consulta
-                        command.ExecuteNonQuery();
-                        Console.WriteLine("Tabla 'Clientes' creada con éxito.");
-                    }
-                    using (var command = new MySqlCommand(tablalibros, connection))
-                    {
-                        // Ejecutar la consulta
-                        command.ExecuteNonQuery();
-                        Console.WriteLine("Tabla 'Libros' creada con éxito.");
-                    }
-                    using (var command = new MySqlCommand(tablageneros, connection))
-                    {
-                        // Ejecutar la consulta
-                        command.ExecuteNonQuery();
-                        Console.WriteLine("Tabla 'Generos' creada con éxito.");
-                    }
-                }
-                catch (Exception ex)
+                string createTablesQuery = @"
+         CREATE TABLE IF NOT EXISTS clientes(
+           id INT NOT NULL AUTO_INCREMENT,
+           nombre VARCHAR(30) NOT NULL,
+           apellido VARCHAR(30) NOT NULL,
+           dni VARCHAR(8) NOT NULL,
+           telefono VARCHAR(40) NOT NULL,
+           email VARCHAR(40) NOT NULL,
+           creado_el TIMESTAMP DEFAULT NOW(),
+           actualizado_el TIMESTAMP DEFAULT NOW(),
+           estado TINYINT DEFAULT(1),
+              PRIMARY KEY (id));
+          
+           CREATE TABLE IF NOT EXISTS genero(
+           id INT NOT NULL AUTO_INCREMENT,
+           genero VARCHAR(20) NOT NULl,
+           PRIMARY KEY (id));
+          
+          CREATE TABLE IF NOT EXISTS libros(
+           id INT NOT NULL AUTO_INCREMENT,
+           nombre VARCHAR(40) NOT NULL,
+           autor VARCHAR(40) NOT NULL,
+           fecha_lanzamiento DATE,
+           id_genero INT,
+              creado_el TIMESTAMP DEFAULT NOW(),
+           actualizado_el TIMESTAMP DEFAULT NOW(),
+              FOREIGN KEY (id_genero) references genero(id),
+           estado TINYINT DEFAULT(1),
+           PRIMARY KEY (id));
+
+           CREATE TABLE IF NOT EXISTS prestamo(
+              id INT NOT NULL AUTO_INCREMENT,
+              fecha_prestamo DATE,
+              fecha_devolucion_estimada DATE,
+              fecha_devolucion_real DATE,
+              id_cliente INT,
+              id_libro INT,
+              CONSTRAINT fk_cliente
+              FOREIGN KEY (id_cliente) REFERENCES clientes(id),  
+              CONSTRAINT fk_libro
+              FOREIGN KEY (id_libro) REFERENCES libros(id),
+              PRIMARY KEY (id));
+              ";
+
+                using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
-                    // Mostrar errores si ocurren
-                    Console.WriteLine("Error: " + ex.Message);
+                    try
+                    {
+                        conn.Open();
+                        MySqlCommand cmd = new MySqlCommand(createTablesQuery, conn);
+                        cmd.ExecuteNonQuery();
+                        Console.WriteLine("Tablas creadas correctamente.");
+                        Console.WriteLine("\nPresione cualquier tecla para iniciar el programa . . . ");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error al crear las tablas: " + ex.Message);
+                    }
                 }
+                Console.ReadLine();
+
             }
-            Console.WriteLine("Presiona cualquier tecla para iniciar el programa...");
-            Console.ReadKey();
+
+            CrearTablas();
 
             void crear_usuario()
             {
