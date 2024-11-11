@@ -222,9 +222,12 @@ namespace MySqlConsole
 
                         MySqlCommand cmd = new MySqlCommand(query, conn);
                         MySqlDataReader reader = cmd.ExecuteReader();
-
-                        Console.Write("\t -------TABLA DE USUARIOS-------");
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
+                        Console.Write("\t -------// TABLA DE USUARIOS //-------");
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("\n ID |   NOMBRE   |  APELLIDO  |    DNI   |  TELEFONO    |         EMAIL             |");
+                        Console.ResetColor();
+
 
                         int anchoColumna1 = 3;
                         int anchoColumna2 = 10;
@@ -270,8 +273,11 @@ namespace MySqlConsole
                         MySqlCommand cmd = new MySqlCommand(query, conn);
                         MySqlDataReader reader = cmd.ExecuteReader();
 
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
                         Console.Write("\t\t----------------// TABLA DE PRESTAMOS //----------------");
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("\n ID |  FECHA DE PRESTAMO  | FECHA DE DEVOLUCION ESTIMADA | FECHA DE DEVOLUCION REAL |  ID_CLIENTE  | ID_LIBRO     |");
+                        Console.ResetColor();
 
                         int anchoColumna1 = 3;
                         int anchoColumna2 = 19;
@@ -320,8 +326,11 @@ namespace MySqlConsole
                         MySqlCommand cmd = new MySqlCommand(query, conn);
                         MySqlDataReader reader = cmd.ExecuteReader();
 
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
                         Console.Write("----------// TABLA DE GENEROS//-----------");
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("\n ID |  GENERO           |");
+                        Console.ResetColor();
 
                         int anchoColumna1 = 3;
                         int anchoColumna2 = 18;
@@ -360,8 +369,11 @@ namespace MySqlConsole
                         MySqlCommand cmd = new MySqlCommand(query, conn);
                         MySqlDataReader reader = cmd.ExecuteReader();
 
+                        Console.ForegroundColor = ConsoleColor.DarkRed;
                         Console.Write("\t\t----------------// TABLA DE LIBROS //----------------");
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("\n ID |            NOMBRE              |         AUTOR        |    FECHA DE EDICION   |");
+                        Console.ResetColor();
 
                         int anchoColumna1 = 3;
                         int anchoColumna2 = 30;
@@ -740,8 +752,8 @@ namespace MySqlConsole
                 Console.WriteLine("\nSeleccione el número de identificación del prestamo que desea cerrar: ");
                 id = Console.ReadLine();
                 Console.WriteLine("--> Fecha de devolucion (AÑO/MES/DIA): ");
-                fecha_devolucion = Console.ReadLine();  
- 
+                fecha_devolucion = Console.ReadLine();
+
 
                 using (MySqlConnection connection = new MySqlConnection(connectionString))
                 {
@@ -777,11 +789,12 @@ namespace MySqlConsole
                     }
                 }
 
+
             }
 
 
-                // Crear la conexión
-                using (MySqlConnection conn = new MySqlConnection(connectionString))
+            // Crear la conexión
+            using (MySqlConnection conn = new MySqlConnection(connectionString))
                 {
                     int opciones = -1;
 
